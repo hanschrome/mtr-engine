@@ -21,3 +21,5 @@ $ make install && make unit
 
 This will create a couple of docker containers, one for a php and another one for nodejs. Nodejs will run the bot service
  and php will allow you to manage how the requests are made.
+
+![Make install and unit output](https://raw.githubusercontent.com/hanschrome/mtr-engine/main/doc/screenshots/make_install_unit.png)
