@@ -1,0 +1,22 @@
+{
+    "instances": {
+        "1": {
+            "id": 1,
+            "name": "PRUEBA 1",
+            "engine": "usdtbusd",
+            "active": false
+        },
+        "2": {
+            "id": 2,
+            "name": "PRUEBA 2",
+            "engine": "busdusdt",
+            "active": false
+        },
+        "3": {
+            "id": 3,
+            "name": "PRUEBA 3",
+            "engine": "buycheapsellexpensive",
+            "active": false
+        }
+    }
+}

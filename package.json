@@ -1,0 +1,32 @@
+{
+  "name": "binance-bot",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "test": "jest",
+    "coverage:unit": "jest --coverage --testPathPattern=test/Unit",
+    "coverage:integration": "jest --coverage --testPathPattern=test/Integration",
+    "test:unit": "jest --testPathPattern=test/Unit",
+    "test:integration": "jest --testPathPattern=test/Integration"
+  },
+  "dependencies": {
+    "@jest/globals": "^27.5.1",
+    "axios": "0.26.1",
+    "cookie-parser": "1.4.6",
+    "cors": "2.8.5",
+    "debug": "4.3.4",
+    "dotenv": "16.0.0",
+    "express": "4.17.3",
+    "fs": "0.0.1-security",
+    "http-errors": "1.6.2",
+    "morgan": "1.10.0",
+    "node-binance-api": "0.13.1",
+    "node-sass-middleware": "1.0.1",
+    "pug": "3.0.2",
+    "scandir": "0.1.2"
+  },
+  "devDependencies": {
+    "jest": "^27.5.1"
+  }
+}

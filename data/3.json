@@ -1,0 +1,23 @@
+{
+  "coinAQuantity": 0,
+  "coinBQuantity": 0,
+  "market": "",
+  "marginUp": 1,
+  "marginDown": 1,
+  "lastMaxPrice": null,
+  "lastMinPrice": null,
+  "isBuying": null,
+  "lastBuyingPrice": null,
+  "lastSellingPrice": null,
+  "minProfitabilityOnBuy": 0,
+  "minProfitabilityOnSell": 0,
+  "minQuantityToBuy": 10,
+  "minQuantityToSell": 10,
+  "maxDecimals": 2,
+  "pendingOrders": {
+
+  },
+  "resolvedOrders": {
+
+  }
+}

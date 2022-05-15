@@ -1,0 +1,14 @@
+{
+  "maxPrice": 4000,
+  "minPrice": 1500,
+  "deposit": 100,
+  "currentAmountInMarket": 0.0111,
+  "adjustmentCrypto": 0.1,
+  "adjustmentAbsCrypto": 0.0001,
+  "adjustmentAbsFiat": 10,
+  "market": "ETHBUSD",
+  "mainCoin": "ETH",
+  "secondCoin": "BUSD",
+  "decimalsMainCoin": 4,
+  "decimalsSecondCoin": 2
+}
