@@ -41,6 +41,13 @@ class EngineMultipleExecution {
     evaluateActions(actionCollection) {
 
     }
+
+    /**
+     * @param action {IAction}
+     */
+    evaluateAction(action) {
+
+    }
 }
 
 module.exports = EngineMultipleExecution;

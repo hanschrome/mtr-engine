@@ -23,7 +23,7 @@ class Robot {
     }
 
     /**
-     * @return ActionInterface|null
+     * @return IAction|null
      */
     execute() {
         this.robotEngine.init(this.exchangeBalance, this.exchangePrices, this.robotData);

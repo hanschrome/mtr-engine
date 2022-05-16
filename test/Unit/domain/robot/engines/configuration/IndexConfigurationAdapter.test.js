@@ -26,10 +26,10 @@ const IndexConfigurationAdapterTest = describe('[domain] IndexConfigurationAdapt
                     "1": {"data": "datav"},
                     "2": {"data": "datav"},
                 },
-                expected: {
-                    "1": {"data": "datav"},
-                    "2": {"data": "datav"},
-                }
+            },
+            expected: {
+                "1": {"data": "datav"},
+                "2": {"data": "datav"},
             }
         }];
 

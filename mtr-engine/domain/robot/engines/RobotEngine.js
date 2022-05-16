@@ -13,7 +13,7 @@ class RobotEngine {
     }
 
     /**
-     * @return ActionInterface|null
+     * @return IAction|null
      */
     dispatcher() {
         console.log('Empty dispatcher!');

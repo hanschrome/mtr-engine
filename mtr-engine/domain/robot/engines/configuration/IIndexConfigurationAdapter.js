@@ -1,7 +1,7 @@
 class IIndexConfigurationAdapter {
-    getInstanceByKey(key);
+    getInstanceByKey(key) {}
 
-    getInstances();
+    getInstances() {}
 }
 
 module.exports = IIndexConfigurationAdapter;
