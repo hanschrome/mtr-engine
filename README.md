@@ -15,11 +15,80 @@ It is possible, and it is intentional to have multiple instances running in orde
 
 ## How to set up
 
+1. MTR's configuration files
+
+Create a copy of .env.develop
+
+```cat .env.develop > .env```
+
+Fill the following fields in order to allow the robot to connect with Binance:
+
+```BINANCE_PUBLIC_KEY=
+BINANCE_PRIVATE_KEY=```
+
+If you don't know how to generate or what are this keys, google: "Binance api keys" in order to document yourself.
+
+1. Docker setup
+
 Good practise is to run unit tests:
 
-$ make install && make unit
+```$ make install && make unit```
 
 This will create a couple of docker containers, one for a php and another one for nodejs. Nodejs will run the bot service
  and php will allow you to manage how the requests are made.
 
 ![Make install and unit output](https://raw.githubusercontent.com/hanschrome/mtr-engine/main/doc/screenshots/make_install_unit.png)
+
+1. Algorithms configuration files
+
+All data for trading is on /data.
+
+You will find error-logs, history-logs directories, which will save errors and the history of trading.
+
+Json files located directly under /data are instances' data of an algorithm. The file data/index.json will collect them
+ and set to active or not. Right now the entry point of the API to run all engines on parallel is removed, but it will be
+ restored.
+
+The repository provides some examples of this configuration, you can restore the index.json to:
+
+```{
+"instances": {}
+}```
+
+It will remove all relation with json files. Then, you can just remove 1.json, 2.json, 3.json and 4.json.
+
+1. Install an algorithm
+
+In order to get an algorithm, you have two ways: Create it or clone it.
+
+In case of having a repository with an existing algorithm, go to the root with terminal and execute:
+
+```make add $link```
+
+Where $link is the link to the repository.
+
+It will perform a clone on *mtr-engine/domain/robot/engines/trading-algorithms*, now we have to add it to the RobotEngineFactory.
+
+In RobotEngineFactory::robotEngines, add a new key and the class instance (there's commented an example on the class):
+
+```    robotEngines = {
+ 'linear_function': LinearFunctionRobotEngine
+}```
+
+You will have registered a new algorithm.
+
+Algorithms provide their own unit tests, so run ```$ make install && make unit``` to move the changes to the docker
+ container and run all the unit tests.
+
+MTR does not perform actions if no request is sent to it.
+
+1. Activate cron.php
+
+The cron.php is a file to perform the requests to the node service. It's running once you have executed make install.
+
+Until the endpoint to perform multiple async requests be finished, the file cron.php will have to be edited before
+ execute it.
+
+In the loop, repeat this line with the instance id and the engine key you have set before in the RobotEngineFactory.
+
+```file_get_contents('http://localhost:3000/instance/?id=4&engine=linear_function');```

@@ -22,4 +22,5 @@ unit:
 add:
 	cd mtr-engine/domain/robot/engines/trading-algorithms && \
 	git clone $(repo);
-
+cron:
+    @docker exec -it mtr-cron php cron.php
