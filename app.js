@@ -8,7 +8,7 @@ var sassMiddleware = require('node-sass-middleware');
 var indexRouter = require('./routes/index');
 var instanceRouter = require('./routes/instance');
 var multipleRouter = require('./routes/multiple');
-var cors = require('cors')
+var cors = require('cors');
 
 var app = express();
 
