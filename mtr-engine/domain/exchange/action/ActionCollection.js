@@ -1,24 +1,24 @@
 class ActionCollection {
-    /** @var {ActionInterface[]} */
+    /** @var {IAction[]} */
     actions = [];
 
     /**
      *
-     * @param actions {ActionInterface[]}
+     * @param actions {IAction[]}
      */
     constructor(actions) {
         this.actions = actions;
     }
 
     /**
-     * @returns {ActionInterface[]}
+     * @returns {IAction[]}
      */
     getActions() {
         return this.actions;
     }
 
     /**
-     * @param action {ActionInterface}
+     * @param action {IAction}
      */
     appendAction(action) {
         this.actions.push(action);

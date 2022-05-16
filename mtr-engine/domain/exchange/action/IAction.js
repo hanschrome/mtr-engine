@@ -1,7 +1,7 @@
 /**
  * @property action string|null
  */
-class ActionInterface {
+class IAction {
     quantity = 0;
     market = '';
     action = '';
@@ -34,4 +34,4 @@ class ActionInterface {
     }
 }
 
-module.exports = ActionInterface;
+module.exports = IAction;
