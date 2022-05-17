@@ -82,7 +82,7 @@ class EngineMultipleExecution {
                 return this.exchangeErrorLogRepository.addLog(id, 'ERROR_REQUEST_BALANCE', {
                     error: errorBalance,
                     response: exchangeBalance,
-                    engine: engineKey,
+                    engine: '',
                 });
             }
 
@@ -93,7 +93,7 @@ class EngineMultipleExecution {
                     return this.exchangeErrorLogRepository.addLog(id, 'ERROR_REQUEST_PRICES', {
                         error: errorPrices,
                         response: exchangePrices,
-                        engine: engineKey,
+                        engine: '',
                     });
                 }
 
