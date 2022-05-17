@@ -6,6 +6,7 @@ class BaseEngineConfigurationAdapter extends IEngineConfigurationAdapter {
         id: 0,
         currentAmountInMarket: 0,
         decimalsMainCoin: 4,
+        engine: '',
     };
 
     constructor(data) {
@@ -13,6 +14,9 @@ class BaseEngineConfigurationAdapter extends IEngineConfigurationAdapter {
         this.data = data;
     }
 
+    /**
+     * @returns {number}
+     */
     getId() {
         return this.data.id;
     }
@@ -30,6 +34,10 @@ class BaseEngineConfigurationAdapter extends IEngineConfigurationAdapter {
 
     getDecimalsMainCoin() {
         return this.data.decimalsMainCoin;
+    }
+
+    getEngine() {
+        return this.data.engine;
     }
 }
 
