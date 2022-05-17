@@ -7,15 +7,25 @@ const ExchangeFactory = require('../../../domain/exchange/factory/ExchangeFactor
 class EngineMultipleExecution {
 
     /**
+     * @type {EngineRepository}
+     */
+    engineRepository = null;
+
+    /**
      * @type {ExchangeRepository}
      */
     exchangeRepository = null;
 
     /**
      * @param exchangeRepository {ExchangeRepository}
+     * @param engineRepository {EngineRepository}
      */
-    constructor(exchangeRepository) {
+    constructor(
+        exchangeRepository,
+        engineRepository
+                ) {
         this.exchangeRepository = exchangeRepository;
+        this.engineRepository = engineRepository;
     }
 
     executeByConfiguration() {
@@ -26,7 +36,9 @@ class EngineMultipleExecution {
      * @return {IndexConfigurationAdapter}
      */
     getIndexConfigurationAdapter() {
-        return new IndexConfigurationAdapter({});
+        const indexData = this.engineRepository.getIndex();
+
+        return new IndexConfigurationAdapter(indexData);
     }
 
     callBalanceAndPrices(callback) {
