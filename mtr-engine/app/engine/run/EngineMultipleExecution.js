@@ -35,7 +35,6 @@ class EngineMultipleExecution {
     exchangeBalanceResponseAdapter = null;
 
     /**
-     *
      * @type {AbstractExchangeService}
      */
     exchangeService = null;
