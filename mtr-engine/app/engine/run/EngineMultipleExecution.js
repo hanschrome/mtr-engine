@@ -3,7 +3,6 @@ const ExchangeBalanceResponseAdapter = require('../../../domain/exchange/respons
 const ExchangePricesResponseAdapter = require('../../../domain/exchange/response/model/ExchangePricesResponseAdapter');
 const BaseEngineConfigurationAdapter = require('../../../domain/robot/engines/configuration/BaseEngineConfigurationAdapter');
 const ActionCollection = require('../../../domain/exchange/action/ActionCollection');
-const ExchangeFactory = require('../../../domain/exchange/factory/ExchangeFactory');
 const Robot = require('../../../domain/robot/Robot');
 const RobotEngineFactory = require('../../../domain/robot/engines/factory/RobotEngineFactory');
 const ExchangeActionResponseAdapter = require('../../../domain/exchange/response/model/ExchangeActionResponseAdapter');
@@ -46,136 +45,118 @@ class EngineMultipleExecution {
      * @param engineRepository {EngineRepository}
      * @param exchangeErrorLogRepository {ExchangeErrorLogRepository}
      * @param exchangeHistoryLogRepository {ExchangeHistoryLogRepository}
+     * @param exchangeService {AbstractExchangeService}
      */
     constructor(
         exchangeRepository,
         engineRepository,
         exchangeErrorLogRepository,
         exchangeHistoryLogRepository,
-                ) {
+        exchangeService,
+    ) {
         this.exchangeRepository = exchangeRepository;
         this.engineRepository = engineRepository;
         this.exchangeErrorLogRepository = exchangeErrorLogRepository;
         this.exchangeHistoryLogRepository = exchangeHistoryLogRepository;
+        this.exchangeService = exchangeService;
     }
 
     executeByConfiguration() {
-        this.callBalanceAndPrices(this.evaluateInstances);
+        this.getBalanceAndPrices()
+            .then(exchangeData => this.evaluateInstances(exchangeData.exchangeBalanceResponseAdapter, exchangeData.exchangePricesResponseAdapter))
+            .then(actions => this.evaluateActions(actions))
+            .catch((error) => this.exchangeErrorLogRepository.addLog('', 'generalError', error));
     }
 
     /**
-     * @return {IndexConfigurationAdapter}
+     * @return {Promise}
      */
-    getIndexConfigurationAdapter() {
-        const indexData = this.engineRepository.getIndex();
+    getBalanceAndPrices() {
+        return new Promise((ok, ko) => {
+            this.exchangeService.balance((errorBalance, exchangeBalance) => {
+                if (errorBalance) return ko({error: errorBalance, response: exchangeBalance});
 
-        return new IndexConfigurationAdapter(indexData);
-    }
+                const exchangeBalanceResponseAdapter = new ExchangeBalanceResponseAdapter(exchangeBalance);
 
-    callBalanceAndPrices(callback) {
-        const exchangeFactory = new ExchangeFactory();
-        const ExchangeService = exchangeFactory.getByKey(this.exchangeRepository.active);
-        this.exchangeService = new ExchangeService(this.exchangeRepository.getActive());
+                this.exchangeService.prices([], (errorPrices, exchangePrices) => {
+                    if (errorPrices) return ko({error: errorPrices, response: exchangePrices});
 
-        this.exchangeService.balance((errorBalance, exchangeBalance) => {
-            if (errorBalance) {
-                return this.exchangeErrorLogRepository.addLog('error', 'ERROR_REQUEST_BALANCE', {
-                    error: errorBalance,
-                    response: exchangeBalance,
-                    engine: '',
+                    const exchangePricesResponseAdapter = new ExchangePricesResponseAdapter(exchangePrices);
+
+                    ok({exchangeBalanceResponseAdapter, exchangePricesResponseAdapter});
                 });
-            }
-
-            this.exchangeBalanceResponseAdapter = new ExchangeBalanceResponseAdapter(exchangeBalance);
-
-            this.exchangeService.prices([], (errorPrices, exchangePrices) => {
-                if (errorPrices) {
-                    return this.exchangeErrorLogRepository.addLog('error', 'ERROR_REQUEST_PRICES', {
-                        error: errorPrices,
-                        response: exchangePrices,
-                        engine: '',
-                    });
-                }
-
-                this.exchangePricesResponseAdapter = new ExchangePricesResponseAdapter(exchangePrices);
-
-                callback(
-                    this.getIndexConfigurationAdapter(),
-                    this.exchangeBalanceResponseAdapter,
-                    this.exchangePricesResponseAdapter
-                );
             });
         });
     }
 
     /**
-     * @param indexConfigurationAdapter {IndexConfigurationAdapter}
      * @param exchangeBalanceResponseAdapter {ExchangeBalanceResponseAdapter}
      * @param exchangePricesResponseAdapter {ExchangePricesResponseAdapter}
      */
-    evaluateInstances(indexConfigurationAdapter,
-                      exchangeBalanceResponseAdapter,
-                      exchangePricesResponseAdapter
-                      ) {
-        /** @var {IAction[]} */
-        const actions = [];
+    evaluateInstances(exchangeBalanceResponseAdapter, exchangePricesResponseAdapter) {
+        const indexConfigurationAdapter = new IndexConfigurationAdapter(this.engineRepository.getIndex())
 
-        for (let i = 0; i < indexConfigurationAdapter.getInstances().length; i++) {
-            const instanceId = indexConfigurationAdapter.getInstances()[i].id;
-            const instanceEngine = indexConfigurationAdapter.getInstances()[i].engine;
-            const instanceActive = indexConfigurationAdapter.getInstances()[i].active;
+        return new Promise((ok) => {
+            /** @var {IAction[]} */
+            const actions = [];
 
-            if (!instanceActive) continue;
+            for (let i = 0; i < indexConfigurationAdapter.getInstances().length; i++) {
+                const instanceId = indexConfigurationAdapter.getInstances()[i].id;
+                const instanceEngine = indexConfigurationAdapter.getInstances()[i].engine;
+                const instanceActive = indexConfigurationAdapter.getInstances()[i].active;
 
-            const baseEngineConfigurationData = this.engineRepository.getById(instanceId);
-            baseEngineConfigurationData.data.engine = instanceEngine;
+                if (!instanceActive) continue;
 
-            const baseEngineConfigurationAdapter = new BaseEngineConfigurationAdapter(baseEngineConfigurationData);
+                const baseEngineConfigurationData = this.engineRepository.getById(instanceId);
+                baseEngineConfigurationData.data.engine = instanceEngine;
 
-            const robotEngineFactory = new RobotEngineFactory();
-            const RobotEngine = robotEngineFactory.getByKey(baseEngineConfigurationAdapter.getEngine());
-            const robotEngine = new RobotEngine();
+                const baseEngineConfigurationAdapter = new BaseEngineConfigurationAdapter(baseEngineConfigurationData);
 
-            const robot = new Robot(robotEngine, baseEngineConfigurationAdapter, exchangePricesResponseAdapter, exchangeBalanceResponseAdapter);
+                const robotEngineFactory = new RobotEngineFactory();
+                const RobotEngine = robotEngineFactory.getByKey(baseEngineConfigurationAdapter.getEngine());
+                const robotEngine = new RobotEngine();
 
-            /** @var action IAction */
-            const action = robot.execute();
-            action.engineConfiguration = baseEngineConfigurationAdapter;
+                const robot = new Robot(robotEngine, baseEngineConfigurationAdapter, exchangePricesResponseAdapter, exchangeBalanceResponseAdapter);
 
-            let executeAction = { result: true, because: { 'Action': 'default' } };
+                /** @var action IAction */
+                const action = robot.execute();
+                action.engineConfiguration = baseEngineConfigurationAdapter;
 
-            if (!action) {
-                executeAction = { result: false, because: { 'Action': false } };
-            } else if (action.action === 'buyMarket') {
-                executeAction = this.checkCanBuy(action, exchangePricesResponseAdapter, exchangeBalanceResponseAdapter);
+                let executeAction = {result: true, because: {'Action': 'default'}};
 
-                action.message = 'Buying ' + action.getQuantity() + ' ' + action.getMainCoin() + ' for ' +
-                    action.getQuantity()*exchangePricesResponseAdapter.getPriceByMarket(action.getMarket()) + ' ' +
-                    action.getSecondCoin();
-            } else if (action.action === 'sellMarket') {
-                executeAction = this.checkCanSell(action, exchangePricesResponseAdapter, exchangeBalanceResponseAdapter);
+                if (!action) {
+                    executeAction = {result: false, because: {'Action': false}};
+                } else if (action.action === 'buyMarket') {
+                    executeAction = this.checkCanBuy(action, exchangePricesResponseAdapter, exchangeBalanceResponseAdapter);
 
-                action.message = 'Selling ' + action.getQuantity() + ' ' + action.getSecondCoin() + ' for ' +
-                    action.getQuantity()/exchangePricesResponseAdapter.getPriceByMarket(action.getMarket()) + ' ' +
-                    action.getMainCoin();
+                    action.message = 'Buying ' + action.getQuantity() + ' ' + action.getMainCoin() + ' for ' +
+                        action.getQuantity() * exchangePricesResponseAdapter.getPriceByMarket(action.getMarket()) + ' ' +
+                        action.getSecondCoin();
+                } else if (action.action === 'sellMarket') {
+                    executeAction = this.checkCanSell(action, exchangePricesResponseAdapter, exchangeBalanceResponseAdapter);
+
+                    action.message = 'Selling ' + action.getQuantity() + ' ' + action.getSecondCoin() + ' for ' +
+                        action.getQuantity() / exchangePricesResponseAdapter.getPriceByMarket(action.getMarket()) + ' ' +
+                        action.getMainCoin();
+                }
+
+                if (!executeAction.result && action) this.exchangeErrorLogRepository.addLog(baseEngineConfigurationAdapter.getId(),
+                    'ACTION_IMPOSSIBLE', {
+                        error: action,
+                        because: executeAction.because,
+                        response: {
+                            exchangePrices: exchangePricesResponseAdapter.data,
+                            exchangeBalance: exchangeBalanceResponseAdapter.data,
+                            baseEngineConfigurationAdapter,
+                        },
+                        engine: baseEngineConfigurationAdapter.getEngine(),
+                    });
+
+                if (executeAction.result) actions.push(action);
             }
 
-            if (!executeAction.result && action) this.exchangeErrorLogRepository.addLog(baseEngineConfigurationAdapter.getId(),
-                'ACTION_IMPOSSIBLE', {
-                error: action,
-                because: executeAction.because,
-                response: {
-                    exchangePrices: exchangePricesResponseAdapter.data,
-                    exchangeBalance: exchangeBalanceResponseAdapter.data,
-                    baseEngineConfigurationAdapter,
-                },
-                engine: baseEngineConfigurationAdapter.getEngine(),
-            });
-
-            if (executeAction.result) actions.push(action);
-        }
-
-        this.evaluateActions(new ActionCollection(actions));
+            ok(new ActionCollection(actions));
+        });
     }
 
     /**
@@ -183,7 +164,9 @@ class EngineMultipleExecution {
      */
     evaluateActions(actionCollection) {
         for (let i = 0; i < actionCollection.getActions().length; i++) {
-            this.evaluateAction(actionCollection.getActions()[i]);
+            this.evaluateAction(actionCollection.getActions()[i])
+                .then(success => console.log(success))
+                .catch(error => console.log(error));
         }
     }
 
@@ -191,53 +174,61 @@ class EngineMultipleExecution {
      * @param action {IAction}
      */
     evaluateAction(action) {
-        const engineConfigurationAdapter = action.getEngineConfiguration();
+        return new Promise((ok, ko) => {
+            const engineConfigurationAdapter = action.getEngineConfiguration();
 
-        try {
-            this.exchangeService.evaluateAction(action, (error, response) => {
-                if (error) {
-                    return this.exchangeErrorLogRepository.addLog(action.getEngineConfiguration().getId(), 'ERROR_REQUEST_EVALUATE_ACTION', {
-                        error: error,
-                        response: response,
-                        engine: action.getEngineConfiguration().getEngine(),
-                    });
-                }
-
-                const exchangeActionResponseAdapter = new ExchangeActionResponseAdapter(response);
-
-                if (response.status === 'FILLED') {
-                    if (action.action === 'buyMarket') {
-                        engineConfigurationAdapter.setCurrentAmountInMarket(
-                            engineConfigurationAdapter.getCurrentAmountInMarket() + Number.parseFloat(exchangeActionResponseAdapter.getExecutedQuantity())
-                        );
-                    } else if(action.action === 'sellMarket') {
-                        engineConfigurationAdapter.setCurrentAmountInMarket(
-                            engineConfigurationAdapter.getCurrentAmountInMarket() - Number.parseFloat(exchangeActionResponseAdapter.getExecutedQuantity())
-                        );
+            try {
+                this.exchangeService.evaluateAction(action, (error, response) => {
+                    if (error) {
+                        return this.exchangeErrorLogRepository.addLog(action.getEngineConfiguration().getId(), 'ERROR_REQUEST_EVALUATE_ACTION', {
+                            error: error,
+                            response: response,
+                            engine: action.getEngineConfiguration().getEngine(),
+                        });
                     }
 
-                    // @todo change currentAmountInMarket for currentAmountInMarket(amount, coin) and map into an object
-                    engineConfigurationAdapter.setCurrentAmountInMarket(
-                        Math.floor(engineConfigurationAdapter.getCurrentAmountInMarket() * engineConfigurationAdapter.getDecimalsMainCoin())
-                        / engineConfigurationAdapter.getDecimalsMainCoin()
-                    );
+                    const exchangeActionResponseAdapter = new ExchangeActionResponseAdapter(response);
 
-                    this.engineRepository.setObjectById(action.getEngineConfiguration().data, action.getEngineConfiguration().getId());
+                    if (response.status === 'FILLED') {
+                        if (action.action === 'buyMarket') {
+                            engineConfigurationAdapter.setCurrentAmountInMarket(
+                                engineConfigurationAdapter.getCurrentAmountInMarket() + Number.parseFloat(exchangeActionResponseAdapter.getExecutedQuantity())
+                            );
+                        } else if (action.action === 'sellMarket') {
+                            engineConfigurationAdapter.setCurrentAmountInMarket(
+                                engineConfigurationAdapter.getCurrentAmountInMarket() - Number.parseFloat(exchangeActionResponseAdapter.getExecutedQuantity())
+                            );
+                        }
 
-                    this.exchangeHistoryLogRepository.addLog(action.getEngineConfiguration().getId(), action, response, this.exchangePricesResponseAdapter.data);
-                } else {
-                    this.exchangeErrorLogRepository.addLog(action.getEngineConfiguration().getId(), 'ERROR_ACTION_NOT_FILLED', {
-                        error: error,
-                        response: response,
-                        engine: action.getEngineConfiguration().getEngine(),
-                    })
-                }
-            });
-        } catch (e) {
-            // @todo handle error
-        }
+                        // @todo change currentAmountInMarket for currentAmountInMarket(amount, coin) and map into an object
+                        engineConfigurationAdapter.setCurrentAmountInMarket(
+                            Math.floor(engineConfigurationAdapter.getCurrentAmountInMarket() * engineConfigurationAdapter.getDecimalsMainCoin())
+                            / engineConfigurationAdapter.getDecimalsMainCoin()
+                        );
+
+                        this.engineRepository.setObjectById(action.getEngineConfiguration().data, action.getEngineConfiguration().getId());
+
+                        this.exchangeHistoryLogRepository.addLog(action.getEngineConfiguration().getId(), action, response, {});
+
+                        ok(action.getAction());
+                    } else {
+                        /**
+                         * @todo Here should be some extra handles, big amounts are not instantly fulfilled on a market action
+                         */
+                        this.exchangeErrorLogRepository.addLog(action.getEngineConfiguration().getId(), 'ERROR_ACTION_NOT_FILLED', {
+                            error: error,
+                            response: response,
+                            engine: action.getEngineConfiguration().getEngine(),
+                        });
+
+                        ko('NOT_FILLED');
+                    }
+                });
+            } catch (e) {
+                ko(e);
+            }
+        });
     }
-
 
     /**
      *
