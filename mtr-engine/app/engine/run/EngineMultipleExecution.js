@@ -79,7 +79,7 @@ class EngineMultipleExecution {
 
         this.exchangeService.balance((errorBalance, exchangeBalance) => {
             if (errorBalance) {
-                return this.exchangeErrorLogRepository.addLog(id, 'ERROR_REQUEST_BALANCE', {
+                return this.exchangeErrorLogRepository.addLog('error', 'ERROR_REQUEST_BALANCE', {
                     error: errorBalance,
                     response: exchangeBalance,
                     engine: '',
@@ -90,7 +90,7 @@ class EngineMultipleExecution {
 
             this.exchangeService.prices([], (errorPrices, exchangePrices) => {
                 if (errorPrices) {
-                    return this.exchangeErrorLogRepository.addLog(id, 'ERROR_REQUEST_PRICES', {
+                    return this.exchangeErrorLogRepository.addLog('error', 'ERROR_REQUEST_PRICES', {
                         error: errorPrices,
                         response: exchangePrices,
                         engine: '',
