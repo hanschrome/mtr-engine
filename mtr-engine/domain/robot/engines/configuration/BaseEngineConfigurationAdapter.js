@@ -28,14 +28,23 @@ class BaseEngineConfigurationAdapter extends IEngineConfigurationAdapter {
         this.data.currentAmountInMarket = currentAmountInMarket;
     }
 
+    /**
+     * @returns {number}
+     */
     getCurrentAmountInMarket() {
         return this.data.currentAmountInMarket;
     }
 
+    /**
+     * @returns {number}
+     */
     getDecimalsMainCoin() {
         return this.data.decimalsMainCoin;
     }
 
+    /**
+     * @returns {string}
+     */
     getEngine() {
         return this.data.engine;
     }

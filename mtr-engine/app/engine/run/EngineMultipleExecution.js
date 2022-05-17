@@ -4,9 +4,9 @@ const ExchangePricesResponseAdapter = require('../../../domain/exchange/response
 const BaseEngineConfigurationAdapter = require('../../../domain/robot/engines/configuration/BaseEngineConfigurationAdapter');
 const ActionCollection = require('../../../domain/exchange/action/ActionCollection');
 const ExchangeFactory = require('../../../domain/exchange/factory/ExchangeFactory');
-const Robot = require("../../../domain/robot/Robot");
-const RobotEngineFactory = require("../../../domain/robot/engines/factory/RobotEngineFactory");
-const ExchangeActionResponseAdapter = require("../../../domain/exchange/response/model/ExchangeActionResponseAdapter");
+const Robot = require('../../../domain/robot/Robot');
+const RobotEngineFactory = require('../../../domain/robot/engines/factory/RobotEngineFactory');
+const ExchangeActionResponseAdapter = require('../../../domain/exchange/response/model/ExchangeActionResponseAdapter');
 
 class EngineMultipleExecution {
 
@@ -21,23 +21,42 @@ class EngineMultipleExecution {
     exchangeRepository = null;
 
     /**
+     * @type {ExchangeHistoryLogRepository}
+     */
+    exchangeHistoryLogRepository = null;
+
+    /**
      * @type {ExchangeErrorLogRepository}
      */
     exchangeErrorLogRepository = null;
 
     /**
+     * @type {ExchangeBalanceResponseAdapter}
+     */
+    exchangeBalanceResponseAdapter = null;
+
+    /**
+     *
+     * @type {AbstractExchangeService}
+     */
+    exchangeService = null;
+
+    /**
      * @param exchangeRepository {ExchangeRepository}
      * @param engineRepository {EngineRepository}
      * @param exchangeErrorLogRepository {ExchangeErrorLogRepository}
+     * @param exchangeHistoryLogRepository {ExchangeHistoryLogRepository}
      */
     constructor(
         exchangeRepository,
         engineRepository,
         exchangeErrorLogRepository,
+        exchangeHistoryLogRepository,
                 ) {
         this.exchangeRepository = exchangeRepository;
         this.engineRepository = engineRepository;
         this.exchangeErrorLogRepository = exchangeErrorLogRepository;
+        this.exchangeHistoryLogRepository = exchangeHistoryLogRepository;
     }
 
     executeByConfiguration() {
@@ -56,9 +75,9 @@ class EngineMultipleExecution {
     callBalanceAndPrices(callback) {
         const exchangeFactory = new ExchangeFactory();
         const ExchangeService = exchangeFactory.getByKey(this.exchangeRepository.active);
-        const exchangeService = new ExchangeService(this.exchangeRepository.getActive());
+        this.exchangeService = new ExchangeService(this.exchangeRepository.getActive());
 
-        exchangeService.balance((errorBalance, exchangeBalance) => {
+        this.exchangeService.balance((errorBalance, exchangeBalance) => {
             if (errorBalance) {
                 return this.exchangeErrorLogRepository.addLog(id, 'ERROR_REQUEST_BALANCE', {
                     error: errorBalance,
@@ -67,9 +86,9 @@ class EngineMultipleExecution {
                 });
             }
 
-            const exchangeBalanceResponseAdapter = new ExchangeBalanceResponseAdapter(exchangeBalance);
+            this.exchangeBalanceResponseAdapter = new ExchangeBalanceResponseAdapter(exchangeBalance);
 
-            exchangeService.prices([], (errorPrices, exchangePrices) => {
+            this.exchangeService.prices([], (errorPrices, exchangePrices) => {
                 if (errorPrices) {
                     return this.exchangeErrorLogRepository.addLog(id, 'ERROR_REQUEST_PRICES', {
                         error: errorPrices,
@@ -78,12 +97,13 @@ class EngineMultipleExecution {
                     });
                 }
 
-                const exchangePricesResponseAdapter = new ExchangePricesResponseAdapter(exchangePrices);
+                this.exchangePricesResponseAdapter = new ExchangePricesResponseAdapter(exchangePrices);
 
                 callback(
                     this.getIndexConfigurationAdapter(),
-                    exchangeBalanceResponseAdapter,
-                    exchangePricesResponseAdapter);
+                    this.exchangeBalanceResponseAdapter,
+                    this.exchangePricesResponseAdapter
+                );
             });
         });
     }
@@ -120,6 +140,7 @@ class EngineMultipleExecution {
 
             /** @var action IAction */
             const action = robot.execute();
+            action.engineConfiguration = baseEngineConfigurationAdapter;
 
             let executeAction = { result: true, because: { 'Action': 'default' } };
 
@@ -170,13 +191,15 @@ class EngineMultipleExecution {
      * @param action {IAction}
      */
     evaluateAction(action) {
+        const engineConfigurationAdapter = action.getEngineConfiguration();
+
         try {
-            exchangeService.evaluateAction(action, (error, response) => {
+            this.exchangeService.evaluateAction(action, (error, response) => {
                 if (error) {
-                    return this.exchangeErrorLogRepository.addLog(id, 'ERROR_REQUEST_EVALUATE_ACTION', {
+                    return this.exchangeErrorLogRepository.addLog(action.getEngineConfiguration().getId(), 'ERROR_REQUEST_EVALUATE_ACTION', {
                         error: error,
                         response: response,
-                        engine: engineKey,
+                        engine: action.getEngineConfiguration().getEngine(),
                     });
                 }
 
@@ -199,14 +222,14 @@ class EngineMultipleExecution {
                         / engineConfigurationAdapter.getDecimalsMainCoin()
                     );
 
-                    this.engineRepository.setObjectById(engine, id);
+                    this.engineRepository.setObjectById(action.getEngineConfiguration().data, action.getEngineConfiguration().getId());
 
-                    this.exchangeHistoryLogRepository.addLog(id, action, response, exchangePricesResponseAdapter.data);
+                    this.exchangeHistoryLogRepository.addLog(action.getEngineConfiguration().getId(), action, response, this.exchangePricesResponseAdapter.data);
                 } else {
-                    this.exchangeErrorLogRepository.addLog(id, 'ERROR_ACTION_NOT_FILLED', {
+                    this.exchangeErrorLogRepository.addLog(action.getEngineConfiguration().getId(), 'ERROR_ACTION_NOT_FILLED', {
                         error: error,
                         response: response,
-                        engine: engineKey,
+                        engine: action.getEngineConfiguration().getEngine(),
                     })
                 }
             });

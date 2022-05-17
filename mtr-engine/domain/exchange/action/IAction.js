@@ -8,6 +8,10 @@ class IAction {
     mainCoin = '';
     secondCoin = '';
     message = '';
+    /**
+     * @type {BaseEngineConfigurationAdapter}
+     */
+    engineConfiguration = null;
 
     getQuantity() {
         return this.quantity;
@@ -31,6 +35,13 @@ class IAction {
 
     getMessage() {
         return this.message
+    }
+
+    /**
+     * @returns {BaseEngineConfigurationAdapter}
+     */
+    getEngineConfiguration() {
+        return this.engineConfiguration;
     }
 }
 
