@@ -6,6 +6,7 @@ const ActionCollection = require('../../../domain/exchange/action/ActionCollecti
 const ExchangeFactory = require('../../../domain/exchange/factory/ExchangeFactory');
 const Robot = require("../../../domain/robot/Robot");
 const RobotEngineFactory = require("../../../domain/robot/engines/factory/RobotEngineFactory");
+const ExchangeActionResponseAdapter = require("../../../domain/exchange/response/model/ExchangeActionResponseAdapter");
 
 class EngineMultipleExecution {
 
@@ -150,7 +151,7 @@ class EngineMultipleExecution {
                 engine: baseEngineConfigurationAdapter.getEngine(),
             });
 
-            actions.push(action);
+            if (executeAction.result) actions.push(action);
         }
 
         this.evaluateActions(new ActionCollection(actions));
@@ -170,9 +171,47 @@ class EngineMultipleExecution {
      */
     evaluateAction(action) {
         try {
+            exchangeService.evaluateAction(action, (error, response) => {
+                if (error) {
+                    return this.exchangeErrorLogRepository.addLog(id, 'ERROR_REQUEST_EVALUATE_ACTION', {
+                        error: error,
+                        response: response,
+                        engine: engineKey,
+                    });
+                }
 
+                const exchangeActionResponseAdapter = new ExchangeActionResponseAdapter(response);
+
+                if (response.status === 'FILLED') {
+                    if (action.action === 'buyMarket') {
+                        engineConfigurationAdapter.setCurrentAmountInMarket(
+                            engineConfigurationAdapter.getCurrentAmountInMarket() + Number.parseFloat(exchangeActionResponseAdapter.getExecutedQuantity())
+                        );
+                    } else if(action.action === 'sellMarket') {
+                        engineConfigurationAdapter.setCurrentAmountInMarket(
+                            engineConfigurationAdapter.getCurrentAmountInMarket() - Number.parseFloat(exchangeActionResponseAdapter.getExecutedQuantity())
+                        );
+                    }
+
+                    // @todo change currentAmountInMarket for currentAmountInMarket(amount, coin) and map into an object
+                    engineConfigurationAdapter.setCurrentAmountInMarket(
+                        Math.floor(engineConfigurationAdapter.getCurrentAmountInMarket() * engineConfigurationAdapter.getDecimalsMainCoin())
+                        / engineConfigurationAdapter.getDecimalsMainCoin()
+                    );
+
+                    this.engineRepository.setObjectById(engine, id);
+
+                    this.exchangeHistoryLogRepository.addLog(id, action, response, exchangePricesResponseAdapter.data);
+                } else {
+                    this.exchangeErrorLogRepository.addLog(id, 'ERROR_ACTION_NOT_FILLED', {
+                        error: error,
+                        response: response,
+                        engine: engineKey,
+                    })
+                }
+            });
         } catch (e) {
-            // handle error
+            // @todo handle error
         }
     }
 
