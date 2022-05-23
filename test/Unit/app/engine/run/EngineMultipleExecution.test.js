@@ -6,52 +6,54 @@ const ExchangePricesResponseAdapter = require('../../../../../mtr-engine/domain/
 
 const EngineMultipleExecutionTest = describe('[App] EngineMultipleExecution', () => {
     test('getBalanceAndPrices', () => {
+        const engineMultipleExecutionTestDataProvider = new EngineMultipleExecutionTestDataProvider();
+        const testData = engineMultipleExecutionTestDataProvider.testGetBalanceAndPrices();
+
         const exchangeRepository = {};
         const engineRepository = {};
         const exchangeErrorLogRepository = {};
         const exchangeHistoryLogRepository = {};
-        const exchangeService = {
-            balance: (callback) => {
-                callback(null, {
-                    "ETH": {
-                        "available": 0,
-                        "onOrder": 0,
-                    }
+
+        testData.forEach((testDataUnit) => {
+            const exchangeService = {
+                balance: (callback) => callback(testDataUnit.data.balanceCallback.error, testDataUnit.data.balanceCallback.response),
+                prices: (callback) => callback(testDataUnit.data.pricesCallback.error, testDataUnit.data.pricesCallback.response),
+            };
+
+            const engineMultipleExecution = new EngineMultipleExecution(
+                exchangeRepository,
+                engineRepository,
+                exchangeErrorLogRepository,
+                exchangeHistoryLogRepository,
+                exchangeService
+            );
+
+            const balanceAndPricesPromise = engineMultipleExecution.getBalanceAndPrices();
+
+            balanceAndPricesPromise.then((exchangeData) => {
+                /** @var ExchangeBalanceResponseAdapter */
+                const exchangeBalanceResponseAdapter = exchangeData.exchangeBalanceResponseAdapter;
+                /** @var ExchangePricesResponseAdapter */
+                const exchangePricesResponseAdapter = exchangeData.exchangePricesResponseAdapter;
+
+                const isExchangeBalanceResponseAdapter = exchangeBalanceResponseAdapter instanceof ExchangeBalanceResponseAdapter;
+                const isExchangePricesResponseAdapter = exchangePricesResponseAdapter instanceof ExchangePricesResponseAdapter;
+
+                expect(isExchangeBalanceResponseAdapter).toEqual(true); // I'm sure there's some toBeTrue or toBeTruly but I'm in a train without internet connection
+                expect(isExchangePricesResponseAdapter).toEqual(true);
+
+                Object.keys(testDataUnit.expect.availableBalanceByCoins).forEach((key) => {
+                    expect(exchangeBalanceResponseAdapter.getAvailableBalanceByCoin(key)).toEqual(testDataUnit.expect.availableBalanceByCoins[key]);
                 });
-            },
-            prices: (callback) => {
-                callback(null, {
-                    "ETHBUSD": 0
+
+                Object.keys(testDataUnit.expect.pricesByMarket).forEach((key) => {
+                    expect(exchangePricesResponseAdapter.getPriceByMarket(key)).toEqual(testDataUnit.expect.pricesByMarket[key]);
                 });
-            }
-        };
 
-        const engineMultipleExecution = new EngineMultipleExecution(
-            exchangeRepository,
-            engineRepository,
-            exchangeErrorLogRepository,
-            exchangeHistoryLogRepository,
-            exchangeService
-        );
-
-        const balanceAndPricesPromise = engineMultipleExecution.getBalanceAndPrices();
-
-        balanceAndPricesPromise.then((exchangeData) => {
-            /** @var ExchangeBalanceResponseAdapter */
-            const exchangeBalanceResponseAdapter = exchangeData.exchangeBalanceResponseAdapter;
-            /** @var ExchangePricesResponseAdapter */
-            const exchangePricesResponseAdapter = exchangeData.exchangePricesResponseAdapter;
-
-            const isExchangeBalanceResponseAdapter = exchangeBalanceResponseAdapter instanceof ExchangeBalanceResponseAdapter;
-            const isExchangePricesResponseAdapter = exchangePricesResponseAdapter instanceof ExchangePricesResponseAdapter;
-
-            expect(isExchangeBalanceResponseAdapter).toEqual(true); // I'm sure there's some toBeTrue or toBeTruly but I'm in a train without internet connection
-            expect(isExchangePricesResponseAdapter).toEqual(true);
-            expect(exchangeBalanceResponseAdapter.getAvailableBalanceByCoin('ETH')).toEqual(0);
-            expect(exchangePricesResponseAdapter.getPriceByMarket('ETHBUSD')).toEqual(0);
-        }).catch((error) => {
-            // @todo
-            throw error;
+            }).catch((error) => {
+                // @todo
+                throw error;
+            });
         });
     });
 
