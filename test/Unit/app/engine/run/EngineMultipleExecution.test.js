@@ -59,8 +59,35 @@ const EngineMultipleExecutionTest = describe('[App] EngineMultipleExecution', ()
 
     test('evaluateInstances', () => {
         const engineMultipleExecutionTestDataProvider = new EngineMultipleExecutionTestDataProvider();
-        const data = engineMultipleExecutionTestDataProvider.testEvaluateInstances();
+        const testData = engineMultipleExecutionTestDataProvider.testEvaluateInstances();
 
+        const exchangeRepository = {};
+        const exchangeErrorLogRepository = {};
+        const exchangeHistoryLogRepository = {};
+        const exchangeService = {};
+
+        testData.forEach((testDataUnit) => {
+
+            const engineRepository = {
+                getIndex: () => testDataUnit.data.engineRepositoryGetIndex,
+                getById: (id) => testDataUnit.data.engineRepositoryGetById[id],
+            };
+
+            const engineMultipleExecution = new EngineMultipleExecution(
+                exchangeRepository,
+                engineRepository,
+                exchangeErrorLogRepository,
+                exchangeHistoryLogRepository,
+                exchangeService
+            );
+
+            const evaluateInstancesPromise = engineMultipleExecution.evaluateInstances(testDataUnit.data.exchangeBalanceResponseAdapter, testDataUnit.data.exchangePricesResponseAdapter);
+
+            evaluateInstancesPromise.then((actionCollection) => {
+                /** @var actionCollection {ActionCollection} */
+                expect(actionCollection.getActions()).toEqual(testDataUnit.expect.actions);
+            }).catch((error) => throw error); // @todo handle it properly
+        });
     });
 
     test('evaluateActions', () => {
@@ -87,3 +114,5 @@ const EngineMultipleExecutionTest = describe('[App] EngineMultipleExecution', ()
 
     });
 });
+
+module.exports = EngineMultipleExecutionTest;

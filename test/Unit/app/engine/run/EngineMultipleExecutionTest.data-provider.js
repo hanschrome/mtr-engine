@@ -7,7 +7,19 @@ class EngineMultipleExecutionTestDataProvider {
     }
 
     testEvaluateInstances() {
-
+        return [
+            {
+                data: {
+                    exchangeBalanceResponseAdapter: null,
+                    exchangePricesResponseAdapter: null,
+                    engineRepositoryGetIndex: null,
+                    engineRepositoryGetById: {1: null}
+                },
+                expect: {
+                    actions: [],
+                },
+            },
+        ];
     }
 
     testEvaluateActions() {
