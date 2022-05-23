@@ -61,10 +61,13 @@ class EngineMultipleExecution {
     }
 
     executeByConfiguration() {
-        this.getBalanceAndPrices()
-            .then(exchangeData => this.evaluateInstances(exchangeData.exchangeBalanceResponseAdapter, exchangeData.exchangePricesResponseAdapter))
-            .then(actions => this.evaluateActions(actions))
-            .catch((error) => this.exchangeErrorLogRepository.addLog('', 'generalError', error));
+        this.getBalanceAndPrices().then(
+                exchangeData => this.evaluateInstances(exchangeData.exchangeBalanceResponseAdapter, exchangeData.exchangePricesResponseAdapter),
+                error => this.exchangeErrorLogRepository.addLog('1', 'EvaluatingInstances', error)
+            ).then(
+                actions => this.evaluateActions(actions),
+                error => this.exchangeErrorLogRepository.addLog('1', 'evaluateActions', error)
+            ).catch((error) => this.exchangeErrorLogRepository.addLog('1', 'generalError', error));
     }
 
     /**
@@ -95,7 +98,7 @@ class EngineMultipleExecution {
     evaluateInstances(exchangeBalanceResponseAdapter, exchangePricesResponseAdapter) {
         const indexConfigurationAdapter = new IndexConfigurationAdapter(this.engineRepository.getIndex())
 
-        return new Promise((ok) => {
+        return new Promise((ok, ko) => {
             /** @var {IAction[]} */
             const actions = [];
 
@@ -139,17 +142,16 @@ class EngineMultipleExecution {
                         action.getMainCoin();
                 }
 
-                if (!executeAction.result && action) this.exchangeErrorLogRepository.addLog(baseEngineConfigurationAdapter.getId(),
-                    'ACTION_IMPOSSIBLE', {
-                        error: action,
-                        because: executeAction.because,
-                        response: {
-                            exchangePrices: exchangePricesResponseAdapter.data,
-                            exchangeBalance: exchangeBalanceResponseAdapter.data,
-                            baseEngineConfigurationAdapter,
-                        },
-                        engine: baseEngineConfigurationAdapter.getEngine(),
-                    });
+                if (!executeAction.result && action) ko({
+                    error: action,
+                    because: executeAction.because,
+                    response: {
+                        exchangePrices: exchangePricesResponseAdapter.data,
+                        exchangeBalance: exchangeBalanceResponseAdapter.data,
+                        baseEngineConfigurationAdapter,
+                    },
+                    engine: baseEngineConfigurationAdapter.getEngine(),
+                });
 
                 if (executeAction.result) actions.push(action);
             }
