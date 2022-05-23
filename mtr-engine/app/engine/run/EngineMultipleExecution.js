@@ -62,12 +62,12 @@ class EngineMultipleExecution {
 
     executeByConfiguration() {
         this.getBalanceAndPrices().then(
-                exchangeData => this.evaluateInstances(exchangeData.exchangeBalanceResponseAdapter, exchangeData.exchangePricesResponseAdapter),
-                error => this.exchangeErrorLogRepository.addLog('1', 'EvaluatingInstances', error)
-            ).then(
-                actions => this.evaluateActions(actions),
-                error => this.exchangeErrorLogRepository.addLog('1', 'evaluateActions', error)
-            ).catch((error) => this.exchangeErrorLogRepository.addLog('1', 'generalError', error));
+            exchangeData => this.evaluateInstances(exchangeData.exchangeBalanceResponseAdapter, exchangeData.exchangePricesResponseAdapter),
+            error => this.exchangeErrorLogRepository.addLog('1', 'EvaluatingInstances', error)
+        ).then(
+            actions => this.evaluateActions(actions),
+            error => this.exchangeErrorLogRepository.addLog('1', 'evaluateActions', error)
+        ).catch((error) => this.exchangeErrorLogRepository.addLog('1', 'generalError', error));
     }
 
     /**
@@ -165,9 +165,10 @@ class EngineMultipleExecution {
      */
     evaluateActions(actionCollection) {
         for (let i = 0; i < actionCollection.getActions().length; i++) {
-            this.evaluateAction(actionCollection.getActions()[i])
-                .then(success => console.log(success))
-                .catch(error => console.log(error));
+            this.evaluateAction(actionCollection.getActions()[i]).then(
+                success => console.log(success),
+                error => this.exchangeErrorLogRepository.addLog('1', 'EvaluateActionsError', error)
+            ).catch(error => console.log(error));
         }
     }
 
