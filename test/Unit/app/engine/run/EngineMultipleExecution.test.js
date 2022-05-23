@@ -91,9 +91,26 @@ const EngineMultipleExecutionTest = describe('[App] EngineMultipleExecution', ()
     });
 
     test('evaluateActions', () => {
-        const engineMultipleExecutionTestDataProvider= new EngineMultipleExecutionTestDataProvider();
-        const data = engineMultipleExecutionTestDataProvider.testEvaluateActions();
+        const engineMultipleExecutionTestDataProvider = new EngineMultipleExecutionTestDataProvider();
+        const testData = engineMultipleExecutionTestDataProvider.testEvaluateActions();
 
+        const exchangeRepository = {};
+        const exchangeErrorLogRepository = {};
+        const exchangeHistoryLogRepository = {};
+        const exchangeService = {};
+        const engineRepository = {};
+
+        testData.forEach((testDataUnit) => {
+            const engineMultipleExecution = new EngineMultipleExecution(
+                exchangeRepository,
+                engineRepository,
+                exchangeErrorLogRepository,
+                exchangeHistoryLogRepository,
+                exchangeService
+            );
+
+            engineMultipleExecution.evaluateActions(testDataUnit.data.actions);
+        });
     });
 
     test('evaluateAction', () => {

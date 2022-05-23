@@ -23,7 +23,14 @@ class EngineMultipleExecutionTestDataProvider {
     }
 
     testEvaluateActions() {
-
+        return [
+            {
+                data: {
+                    actions: [], // IAction with fake ok/ko promise ?
+                },
+                expect: {},
+            }
+        ]
     }
 
     testEvaluateAction() {
