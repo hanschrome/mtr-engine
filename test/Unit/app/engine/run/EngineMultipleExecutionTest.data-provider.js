@@ -2,7 +2,7 @@ class EngineMultipleExecutionTestDataProvider {
 
     testGetBalanceAndPrices() {
         return [
-            {data: {balanceCallback: {error: null, response: {'ETH': {'available': 0, 'onOrder': 0,}}}, pricesCallback: {error: null, response: {'ETHBUSD': 0,}}}, expect: {error: null,availableBalanceByCoins: {'EHT': 0,}, pricesByMarket: {'ETHBUSD': 0,}}},
+            {data: {balanceCallback: {error: null, response: {'ETH': {available: 0, onOrder: 0}}}, pricesCallback: {error: null, response: {'ETHBUSD': 0,}}}, expect: {error: null, availableBalanceByCoins: {'ETH': {available: 0, onOrder: 0}}, pricesByMarket: {'ETHBUSD': 0,}}},
         ];
     }
 
@@ -34,7 +34,14 @@ class EngineMultipleExecutionTestDataProvider {
     }
 
     testEvaluateAction() {
-
+        return [
+            {
+                data: {
+                    action: {},
+                },
+                expect: {},
+            }
+        ]
     }
 
     testCheckCanBuy() {
