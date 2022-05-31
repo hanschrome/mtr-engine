@@ -120,8 +120,12 @@ const EngineMultipleExecutionTest = describe('[App] EngineMultipleExecution', ()
         const testData = engineMultipleExecutionTestDataProvider.testEvaluateAction();
 
         const exchangeRepository = {};
-        const exchangeErrorLogRepository = {};
-        const exchangeHistoryLogRepository = {};
+        const exchangeErrorLogRepository = {
+            addLog: () => console.log('EXCHANGE_ERROR_LOG')
+        };
+        const exchangeHistoryLogRepository = {
+            addLog: () => console.log('EXCHANGE_HISTORY_LOG')
+        };
         const exchangeService = {
             evaluateAction: (action, callback) => callback(null, new ExchangeActionResponseAdapter({
 
