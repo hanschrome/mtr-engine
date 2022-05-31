@@ -128,7 +128,7 @@ const EngineMultipleExecutionTest = describe('[App] EngineMultipleExecution', ()
         };
         const exchangeService = {
             evaluateAction: (action, callback) => callback(null, new ExchangeActionResponseAdapter({
-
+                status: 'FILLED'
             }).data) // not redundant, validation & model data.
         };
         const engineRepository = {};
