@@ -37,12 +37,13 @@ If you don't know how to generate or what are this keys, google: "Binance api ke
 Good practise is to run unit tests:
 
 ```
-$ make install && make unit
+$ make build && make unit
 ```
 
 This will create a couple of docker containers, one for a php and another one for nodejs. Nodejs will run the bot service
  and php will allow you to manage how the requests are made.
 
+(Image is out-to-date, is not make install but make build)
 ![Make install and unit output](https://raw.githubusercontent.com/hanschrome/mtr-engine/main/doc/screenshots/make_install_unit.png)
 
 1. Algorithms configuration files
@@ -91,7 +92,7 @@ You will have registered a new algorithm.
 
 Algorithms provide their own unit tests, so run 
 ```
-$ make install && make unit
+$ make build && make unit
 ```
 to move the changes to the docker container and run all the unit tests.
 
