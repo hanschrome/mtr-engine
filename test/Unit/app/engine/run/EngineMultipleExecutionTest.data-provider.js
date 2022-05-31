@@ -44,7 +44,7 @@ class EngineMultipleExecutionTestDataProvider {
             {
                 data: {
                     action: {
-                        getEngineConfiguration: () => new BaseEngineConfigurationAdapter()
+                        getEngineConfiguration: () => new BaseEngineConfigurationAdapter({"id": "1"})
                     },
                 },
                 expect: {},
