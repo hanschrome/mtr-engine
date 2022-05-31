@@ -3,6 +3,7 @@ const EngineMultipleExecutionTestDataProvider = require('./EngineMultipleExecuti
 const EngineMultipleExecution = require('../../../../../mtr-engine/app/engine/run/EngineMultipleExecution');
 const ExchangeBalanceResponseAdapter = require('../../../../../mtr-engine/domain/exchange/response/model/ExchangeBalanceResponseAdapter');
 const ExchangePricesResponseAdapter = require('../../../../../mtr-engine/domain/exchange/response/model/ExchangePricesResponseAdapter');
+const ExchangeActionResponseAdapter = require("../../../../../mtr-engine/domain/exchange/response/model/ExchangeActionResponseAdapter");
 
 const EngineMultipleExecutionTest = describe('[App] EngineMultipleExecution', () => {
     test('getBalanceAndPrices', () => {
@@ -121,7 +122,11 @@ const EngineMultipleExecutionTest = describe('[App] EngineMultipleExecution', ()
         const exchangeRepository = {};
         const exchangeErrorLogRepository = {};
         const exchangeHistoryLogRepository = {};
-        const exchangeService = {};
+        const exchangeService = {
+            evaluateAction: (action, callback) => callback(null, new ExchangeActionResponseAdapter({
+
+            }).data) // not redundant, validation & model data.
+        };
         const engineRepository = {};
 
         testData.forEach((testDataUnit) => {
