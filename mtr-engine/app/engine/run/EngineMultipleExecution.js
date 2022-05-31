@@ -96,7 +96,7 @@ class EngineMultipleExecution {
      * @param exchangePricesResponseAdapter {ExchangePricesResponseAdapter}
      */
     evaluateInstances(exchangeBalanceResponseAdapter, exchangePricesResponseAdapter) {
-        const indexConfigurationAdapter = new IndexConfigurationAdapter(this.engineRepository.getIndex())
+        const indexConfigurationAdapter = new IndexConfigurationAdapter(this.engineRepository.getIndex());
 
         return new Promise((ok, ko) => {
             /** @var {IAction[]} */
