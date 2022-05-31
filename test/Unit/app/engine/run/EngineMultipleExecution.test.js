@@ -53,6 +53,7 @@ const EngineMultipleExecutionTest = describe('[App] EngineMultipleExecution', ()
             }).catch((error) => {
                 // @todo
                 throw error;
+                // throw new Error('EROR::' + JSON.stringify(testDataUnit.data.balanceCallback.response));
             });
         });
     });
@@ -86,7 +87,7 @@ const EngineMultipleExecutionTest = describe('[App] EngineMultipleExecution', ()
             evaluateInstancesPromise.then((actionCollection) => {
                 /** @var actionCollection {ActionCollection} */
                 expect(actionCollection.getActions()).toEqual(testDataUnit.expect.actions);
-            }).catch((error) => throw error); // @todo handle it properly
+            });
         });
     });
 
