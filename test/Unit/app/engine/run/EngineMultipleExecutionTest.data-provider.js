@@ -12,7 +12,11 @@ class EngineMultipleExecutionTestDataProvider {
                 data: {
                     exchangeBalanceResponseAdapter: null,
                     exchangePricesResponseAdapter: null,
-                    engineRepositoryGetIndex: null,
+                    engineRepositoryGetIndex: {
+                        "instances": {
+
+                        }
+                    },
                     engineRepositoryGetById: {1: null}
                 },
                 expect: {
