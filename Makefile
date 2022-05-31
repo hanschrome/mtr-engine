@@ -9,7 +9,7 @@ up:
 	docker-compose up -d | docker compose up -d;
 down:
 	docker-compose down | docker compose down;
-install:
+build:
 	@echo "Running docker compose...";
 	@docker compose up -d --build;
 
