@@ -1,4 +1,5 @@
 const BaseEngineConfigurationAdapter = require('../../../../../mtr-engine/domain/robot/engines/configuration/BaseEngineConfigurationAdapter');
+const ActionCollection = require('../../../../../mtr-engine/domain/exchange/action/ActionCollection');
 
 class EngineMultipleExecutionTestDataProvider {
 
@@ -32,7 +33,7 @@ class EngineMultipleExecutionTestDataProvider {
         return [
             {
                 data: {
-                    actions: [], // IAction with fake ok/ko promise ?
+                    actions: new ActionCollection([]),
                 },
                 expect: {},
             }
@@ -45,7 +46,8 @@ class EngineMultipleExecutionTestDataProvider {
                 data: {
                     action: {
                         getEngineConfiguration: () => new BaseEngineConfigurationAdapter({"id": "1"}),
-                        status: 'FILLED'
+                        status: 'FILLED',
+                        getAction: () => 'buyMarket'
                     },
                 },
                 expect: {},

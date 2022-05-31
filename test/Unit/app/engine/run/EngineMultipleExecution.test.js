@@ -120,18 +120,24 @@ const EngineMultipleExecutionTest = describe('[App] EngineMultipleExecution', ()
         const testData = engineMultipleExecutionTestDataProvider.testEvaluateAction();
 
         const exchangeRepository = {};
+
         const exchangeErrorLogRepository = {
             addLog: () => console.log('EXCHANGE_ERROR_LOG')
         };
+
         const exchangeHistoryLogRepository = {
             addLog: () => console.log('EXCHANGE_HISTORY_LOG')
         };
+
         const exchangeService = {
             evaluateAction: (action, callback) => callback(null, new ExchangeActionResponseAdapter({
                 status: 'FILLED'
             }).data) // not redundant, validation & model data.
         };
-        const engineRepository = {};
+
+        const engineRepository = {
+            setObjectById: (object, id) => {}
+        };
 
         testData.forEach((testDataUnit) => {
             const engineMultipleExecution = new EngineMultipleExecution(
