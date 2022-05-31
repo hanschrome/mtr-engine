@@ -1,3 +1,5 @@
+const BaseEngineConfigurationAdapter = require('../../../../../mtr-engine/domain/robot/engines/configuration/BaseEngineConfigurationAdapter');
+
 class EngineMultipleExecutionTestDataProvider {
 
     testGetBalanceAndPrices() {
@@ -41,7 +43,9 @@ class EngineMultipleExecutionTestDataProvider {
         return [
             {
                 data: {
-                    action: {},
+                    action: {
+                        getEngineConfiguration: () => new BaseEngineConfigurationAdapter()
+                    },
                 },
                 expect: {},
             }
