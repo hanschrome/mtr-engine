@@ -34,7 +34,7 @@ class AbstractExchangeService {
     }
 
     /**
-     * @param action ActionInterface
+     * @param action IAction
      * @param callback
      */
     evaluateAction(action, callback) {

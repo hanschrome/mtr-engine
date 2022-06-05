@@ -31,7 +31,7 @@ class ExchangeHistoryLogRepository {
     /**
      *
      * @param id
-     * @param action {ActionInterface}
+     * @param action {IAction}
      * @param response
      * @param prices
      */

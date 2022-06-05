@@ -9,7 +9,7 @@ up:
 	docker-compose up -d | docker compose up -d;
 down:
 	docker-compose down | docker compose down;
-install:
+build:
 	@echo "Running docker compose...";
 	@docker compose up -d --build;
 
@@ -22,4 +22,6 @@ unit:
 add:
 	cd mtr-engine/domain/robot/engines/trading-algorithms && \
 	git clone $(repo);
+cron:
+	@docker exec -it mtr-cron php cron.php;
 

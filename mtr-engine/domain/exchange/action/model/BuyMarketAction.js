@@ -1,6 +1,6 @@
-const ActionInterface = require('../ActionInterface');
+const IAction = require('../IAction');
 
-class BuyMarketAction extends ActionInterface{
+class BuyMarketAction extends IAction {
     quantity = 0;
     market = null;
     action = 'buyMarket';

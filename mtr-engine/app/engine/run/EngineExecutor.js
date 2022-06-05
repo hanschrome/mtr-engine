@@ -86,7 +86,7 @@ class EngineExecutor {
                 const exchangePricesResponseAdapter = new ExchangePricesResponseAdapter(exchangePrices);
 
                 const robot = new Robot(robotEngine, engine, exchangePricesResponseAdapter, exchangeBalanceResponseAdapter);
-                /** @var action ActionInterface */
+                /** @var action IAction */
                 const action = robot.execute();
 
                 let executeAction = { result: true, because: { 'Action': 'default' } };
@@ -167,7 +167,7 @@ class EngineExecutor {
 
     /**
      *
-     * @param action {ActionInterface}
+     * @param action {IAction}
      * @param exchangePrices {ExchangePricesResponseAdapter}
      * @param exchangeBalance {ExchangeBalanceResponseAdapter}
      * @return {{result: boolean, because: {}}}
@@ -189,7 +189,7 @@ class EngineExecutor {
 
     /**
      *
-     * @param action {ActionInterface}
+     * @param action {IAction}
      * @param exchangePrices {ExchangePricesResponseAdapter}
      * @param exchangeBalance {ExchangeBalanceResponseAdapter}
      * @return {{result: boolean, because: {ButHaving: *, OfCurrency: *, Needed: *}}}
