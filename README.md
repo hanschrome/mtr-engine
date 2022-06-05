@@ -15,7 +15,7 @@ It is possible, and it is intentional to have multiple instances running in orde
 
 ## How to set up
 
-1. MTR's configuration files
+### MTR's configuration files
 
 Create a copy of .env.develop
 
