@@ -46,7 +46,7 @@ This will create a couple of docker containers, one for a php and another one fo
 (Image is out-to-date, is not make install but make build)
 ![Make install and unit output](https://raw.githubusercontent.com/hanschrome/mtr-engine/main/doc/screenshots/make_install_unit.png)
 
-### 2nd step - Algorithms configuration files
+### 3rd step - Algorithms configuration files
 
 All data for trading is on /data.
 
@@ -66,7 +66,7 @@ The repository provides some examples of this configuration, you can restore the
 
 It will remove all relation with json files. Then, you can just remove 1.json, 2.json, 3.json and 4.json.
 
-### 3rd step - Install an algorithm
+### 4th step - Install an algorithm
 
 In order to get an algorithm, you have two ways: Create it or clone it.
 
@@ -98,7 +98,7 @@ to move the changes to the docker container and run all the unit tests.
 
 MTR does not perform actions if no request is sent to it.
 
-### 4th step - Activate cron.php
+### 5th step - Activate cron.php
 
 The cron.php is a file to perform the requests to the node service. It's running once you have executed make install.
 
