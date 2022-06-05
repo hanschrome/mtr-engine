@@ -32,7 +32,7 @@ BINANCE_PRIVATE_KEY=
 
 If you don't know how to generate or what are this keys, google: "Binance api keys" in order to document yourself.
 
-1. Docker setup
+### 1st step - Docker setup
 
 Good practise is to run unit tests:
 
@@ -46,7 +46,7 @@ This will create a couple of docker containers, one for a php and another one fo
 (Image is out-to-date, is not make install but make build)
 ![Make install and unit output](https://raw.githubusercontent.com/hanschrome/mtr-engine/main/doc/screenshots/make_install_unit.png)
 
-1. Algorithms configuration files
+### 2nd step - Algorithms configuration files
 
 All data for trading is on /data.
 
@@ -98,7 +98,7 @@ to move the changes to the docker container and run all the unit tests.
 
 MTR does not perform actions if no request is sent to it.
 
-1. Activate cron.php
+### 3rd step - Activate cron.php
 
 The cron.php is a file to perform the requests to the node service. It's running once you have executed make install.
 
