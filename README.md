@@ -15,7 +15,7 @@ It is possible, and it is intentional to have multiple instances running in orde
 
 ## How to set up
 
-### MTR's configuration files
+### 1st step - MTR's configuration files
 
 Create a copy of .env.develop
 
@@ -32,7 +32,7 @@ BINANCE_PRIVATE_KEY=
 
 If you don't know how to generate or what are this keys, google: "Binance api keys" in order to document yourself.
 
-### 1st step - Docker setup
+### 2nd step - Docker setup
 
 Good practise is to run unit tests:
 
@@ -66,7 +66,7 @@ The repository provides some examples of this configuration, you can restore the
 
 It will remove all relation with json files. Then, you can just remove 1.json, 2.json, 3.json and 4.json.
 
-1. Install an algorithm
+### 3rd step - Install an algorithm
 
 In order to get an algorithm, you have two ways: Create it or clone it.
 
@@ -98,7 +98,7 @@ to move the changes to the docker container and run all the unit tests.
 
 MTR does not perform actions if no request is sent to it.
 
-### 3rd step - Activate cron.php
+### 4th step - Activate cron.php
 
 The cron.php is a file to perform the requests to the node service. It's running once you have executed make install.
 
