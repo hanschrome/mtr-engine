@@ -11,7 +11,7 @@ down:
 	docker-compose down | docker compose down;
 build:
 	@echo "Running docker compose...";
-	@docker compose up -d --build;
+	@docker-compose up -d --build || docker compose up -d --build;
 
 	@echo "Checking permissions for data directory";
 	@docker exec -it mtr-engine chmod 777 -R data/;
