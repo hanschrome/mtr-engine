@@ -30,6 +30,7 @@ class EngineErrorLogRepository {
 
     addLog(errorSummary, errorData) {
         if (process.env.VERBOSE) console.log('Logged engine error: ' + errorSummary);
+        if (process.env.VERBOSE) console.log(errorData);
 
         let object = this.get();
 
