@@ -1,13 +1,17 @@
 /**
  * @property action string|null
  */
-class ActionInterface {
+class IAction {
     quantity = 0;
     market = '';
     action = '';
     mainCoin = '';
     secondCoin = '';
     message = '';
+    /**
+     * @type {BaseEngineConfigurationAdapter}
+     */
+    engineConfiguration = null;
 
     getQuantity() {
         return this.quantity;
@@ -32,6 +36,13 @@ class ActionInterface {
     getMessage() {
         return this.message
     }
+
+    /**
+     * @returns {BaseEngineConfigurationAdapter}
+     */
+    getEngineConfiguration() {
+        return this.engineConfiguration;
+    }
 }
 
-module.exports = ActionInterface;
+module.exports = IAction;

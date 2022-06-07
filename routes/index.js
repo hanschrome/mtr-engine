@@ -7,4 +7,8 @@ router.get('/', function (req, res, next) {
     res.send("MTR working");
 });
 
+router.get('/ping', function (req, res, next) {
+    res.send('["PONG"]');
+});
+
 module.exports = router;

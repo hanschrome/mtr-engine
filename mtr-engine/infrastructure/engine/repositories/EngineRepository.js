@@ -12,6 +12,10 @@ class EngineRepository {
         this.dataDriver = dataDriverInterface;
     }
 
+    getIndex() {
+        return this.getById('index');
+    }
+
     getById(id) {
         const source = this.getSource(id);
 
