@@ -24,4 +24,3 @@ add:
 	git clone $(repo);
 cron:
 	@docker exec -it mtr-cron php cron.php;
-
