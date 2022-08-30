@@ -18,6 +18,8 @@ services:
   cron:
     image: php:7.4-apache
     container_name: mtr-cron
+    volumes:
+      - .:/var/www/html
     links:
       - node
     networks:
