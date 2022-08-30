@@ -110,3 +110,13 @@ In the loop, repeat this line with the instance id and the engine key you have s
 ```
 file_get_contents('http://localhost:3000/instance/?id=4&engine=linear_function');
 ```
+
+NOTES: In case you would like to execute the php file from the docker container:
+
+1. Change the url in cron.php from localhost to the ip of the mtr-engine docker container. You can do it from `docker exec -it mtr-engine ip a` or `docker inspect mtr-engine`
+`file_get_contents('http://172.26.0.2:3000/instance/?id=4&engine=linear_function');`
+2. Execute it. The command `make up` should be executed before in order to have the container running. (Remove the -d in case you want to debug the execution)
+
+```
+docker exec -it -d mtr-cron php cron.php
+```
