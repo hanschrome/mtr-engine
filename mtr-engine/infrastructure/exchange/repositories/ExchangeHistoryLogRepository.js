@@ -46,7 +46,9 @@ class ExchangeHistoryLogRepository {
             };
         }
 
-        object.logs.push({action, response, prices});
+        let timestamp = new Date().getDate();
+
+        object.logs.push({action, response, prices, timestamp});
 
         this.setObjectById(object, id);
     }
