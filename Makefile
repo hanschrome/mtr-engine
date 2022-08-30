@@ -15,12 +15,12 @@ build:
 
 	@echo "Checking permissions for data directory";
 	@docker exec -it mtr-engine chmod 777 -R data/;
-bash:
+bash: up
 	docker exec -it mtr-engine bash;
-unit:
+unit: up
 	@docker exec -it mtr-engine npm run test:unit;
 add:
 	cd mtr-engine/domain/robot/engines/trading-algorithms && \
 	git clone $(repo);
-cron:
+cron: up
 	@docker exec -it mtr-cron php cron.php;
