@@ -17,7 +17,7 @@ It is possible, and it is intentional to have multiple instances running in orde
 
 Verbose guide for server installing:
 
-1. Install dependencies: [Docker && Docker Compose](https://docs.docker.com/desktop/install/archlinux/). 
+1. Install dependencies: Git, [Docker && Docker Compose](https://wiki.archlinux.org/title/docker#Installation). 
 2. Clone this repository (For example, `/home/mtr/services/mtr-engine`).
 3. Install an algorithm (`make add repo='link'`, add it/uncomment also to the `RobotEngineFactory::robotEngines`).
 4. Create a .env from template (`cat .env.develop > .env`).
