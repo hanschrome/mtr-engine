@@ -33,6 +33,7 @@ Useful tips:
 * To stop the services: make down
 * To check the history: data/history-logs/{instance}.json
 * To check the errors: data/error-logs/{instance}.json
+* To soft stop the cron you can do `touch stop` in the project's root.
 * To brush your teeth every day is cheaper than go to the dentist in a few years.
 
 ### 1st step - MTR's configuration files

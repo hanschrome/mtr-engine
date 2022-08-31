@@ -1,8 +1,14 @@
 {
-  "balance": {
-    "BUSD": 0,
-    "USDT": 0
-  },
-  "pending_orders": [],
-  "resolved_orders": []
+  "maxPrice": 3500,
+  "minPrice": 1000,
+  "deposit": 500,
+  "currentAmountInMarket": 0,
+  "adjustmentCrypto": 0.18,
+  "adjustmentAbsCrypto": 0.0001,
+  "adjustmentAbsFiat": 10,
+  "market": "ETHBUSD",
+  "mainCoin": "ETH",
+  "secondCoin": "BUSD",
+  "decimalsMainCoin": 4,
+  "decimalsSecondCoin": 2
 }
