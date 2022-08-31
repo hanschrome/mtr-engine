@@ -15,6 +15,26 @@ It is possible, and it is intentional to have multiple instances running in orde
 
 ## How to set up
 
+Verbose guide for server installing:
+
+1. Install dependencies: [Docker && Docker Compose](https://docs.docker.com/desktop/install/archlinux/). 
+2. Clone this repository (For example, `/home/mtr/services/mtr-engine`).
+3. Install an algorithm (`make add repo='link'`, add it/uncomment also to the `RobotEngineFactory::robotEngines`).
+4. Create a .env from template (`cat .env.develop > .env`).
+5. Add your Binance keys to your .env, the rest of variables can be blank. (`vim .env`)
+6. Setup and testing (`make build && make unit`).
+7. Create a configuration file in /data to your bot and fill the belonged parameters. (`vim data/1.json`).
+8. Add the file to your instances in index.json, only needed for multitrading instances. (`vim data/index.json`).
+9. Run cron.php. `make cron`
+10. Done!
+
+Useful tips:
+
+* To stop the services: make down
+* To check the history: data/history-logs/{instance}.json
+* To check the errors: data/error-logs/{instance}.json
+* To brush your teeth every day is cheaper than go to the dentist in a few years.
+
 ### 1st step - MTR's configuration files
 
 Create a copy of .env.develop
