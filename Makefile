@@ -23,4 +23,6 @@ add:
 	cd mtr-engine/domain/robot/engines/trading-algorithms && \
 	git clone $(repo);
 cron: up
-	@docker exec -it mtr-cron php cron.php;
+	@docker exec -it -d mtr-cron php cron.php;
+install:
+	./install.sh

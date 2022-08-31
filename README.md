@@ -15,6 +15,8 @@ It is possible, and it is intentional to have multiple instances running in orde
 
 ## How to set up
 
+Quick guide for server installing, install git, clone this repository and run in this root: `make install`
+
 Verbose guide for server installing:
 
 1. Install dependencies: Git, [Docker && Docker Compose](https://wiki.archlinux.org/title/docker#Installation). 
