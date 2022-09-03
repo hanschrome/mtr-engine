@@ -204,8 +204,10 @@ class EngineMultipleExecution {
 
                         // @todo change currentAmountInMarket for currentAmountInMarket(amount, coin) and map into an object
                         engineConfigurationAdapter.setCurrentAmountInMarket(
-                            Math.floor(engineConfigurationAdapter.getCurrentAmountInMarket() * engineConfigurationAdapter.getDecimalsMainCoin())
-                            / engineConfigurationAdapter.getDecimalsMainCoin()
+                            this.roundAmount(
+                                engineConfigurationAdapter.getCurrentAmountInMarket(),
+                                engineConfigurationAdapter.getDecimalsMainCoin()
+                            )
                         );
 
                         this.engineRepository.setObjectById(action.getEngineConfiguration().data, action.getEngineConfiguration().getId());
@@ -230,6 +232,15 @@ class EngineMultipleExecution {
                 ko(e);
             }
         });
+    }
+
+    /**
+     *
+     * @param amount {number}
+     * @param decimals {number}
+     */
+    roundAmount(amount, decimals) {
+        return Math.floor(amount * Math.pow(10, decimals)) / Math.pow(10, decimals)
     }
 
     /**
