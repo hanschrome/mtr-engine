@@ -92,7 +92,12 @@ class EngineExecutor {
                 let executeAction = { result: true, because: { 'Action': 'default' } };
 
                 if (!action) {
-                    executeAction = { result: false, because: { 'Action': false } };
+                    executeAction = {result: false, because: {'Action': false}};
+                } else if (action.action === 'refreshStatus') {
+                    engine.status = action.getStatus();
+                    this.engineRepository.setObjectById(engine, id);
+
+                    executeAction = {result: false, because: {'Action': false}};
                 } else if (action.action === 'buyMarket') {
                     executeAction = this.checkCanBuy(action, exchangePricesResponseAdapter, exchangeBalanceResponseAdapter);
 
